@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/snap/zig/11625/lib/libcxx"
+            ],
+            "defines": [],
+            "cStandard": "c23",
+            "cppStandard": "c++23",
+            "intelliSenseMode": "linux-gcc-x64",
+            "compilerPath": "/usr/bin/g++-12",
+            "compilerArgs": [
+                "${workspaceFolder}/**"
+            ]
+        }
+    ],
+    "version": 4
+}
