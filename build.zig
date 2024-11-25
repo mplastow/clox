@@ -27,6 +27,7 @@ pub fn build(b: *std.Build) void {
         "src/memory.c",
         "src/debug.c",
         "src/value.c",
+        "src/vm.c",
     };
     // Array of clang compiler flags to pass to addCSourceFiles()
     const exe_flags = [_][]const u8{
