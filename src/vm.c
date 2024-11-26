@@ -9,19 +9,53 @@
 // Note(matt): should probably static if a global, and having a global is bad anyway!
 VM vm;
 
-void initVM() {};
+// Resets the stack by assigning the stack pointer to the first item in the stack
+static void resetStack(void)
+{
+    // Note(matt): relies on stack[] decaying to a pointer
+    vm.stack_top = vm.stack;
+}
 
-void freeVM() {};
+void initVM(void)
+{
+    resetStack();
+};
 
-static InterpretResult run()
+void freeVM(void) {};
+
+void push(Value value)
+{
+    // Dereference the stack pointer and place the value there, then increment stack pointer
+    *vm.stack_top = value;
+    vm.stack_top++;
+    // Note(matt): What if we go off the end of the stack???
+}
+
+Value pop(void)
+{
+    // Move the stack pointer back one item, then return the value there
+    vm.stack_top--;
+    return *vm.stack_top;
+}
+
+static InterpretResult run(void)
 {
 // Note(matt): pointer arithmetic? inside a preprocessor directive??
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
 
-    // Run until we've run out of instructions: heart of the VM
+    // Run until we've run out of instructions -- the heart of the VM
     for (;;) {
 #ifdef DEBUG_TRACE_EXECUTION
+        // Print current contents of stack before interpreting each instruction
+        printf("          ");
+        for (Value* slot = vm.stack; slot < vm.stack_top; slot++) {
+            printf("[ ");
+            printValue(*slot);
+            printf(" ]");
+        }
+        printf("\n");
+
         // Disassemble and print each instruction
         disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
 #endif // DEBUG_TRACE_EXECUTION
@@ -31,10 +65,11 @@ static InterpretResult run()
         switch (instruction = READ_BYTE()) {
         case OP_CONSTANT: {
             Value constant = READ_CONSTANT();
-            printValue(constant);
-            printf("\n");
+            push(constant);
         } break;
         case OP_RETURN: {
+            printValue(pop());
+            printf("\n");
             return INTERPRET_OK;
         }
         }

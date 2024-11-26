@@ -32,7 +32,7 @@ pub fn build(b: *std.Build) void {
     // Array of clang compiler flags to pass to addCSourceFiles()
     const exe_flags = [_][]const u8{
         // Standards and optimization flags
-        "-std=c23", // C 23
+        "-std=c23", // C23
         "-g", // Include debug information in binary
         "-ggdb3", // Maximizes debug information
         "-Og", // Optimization level: Og = debug, Os = size, O3 = maximum
@@ -67,7 +67,7 @@ pub fn build(b: *std.Build) void {
         // "-pedantic-errors", // Always turn pedantic warnings into errors, and reject all forbidden compiler extensions
 
         // Dialect flags
-        "-fno-exceptions", // Disables exception handling
+        // "-fno-exceptions", // Disables exception handling
         // "-fno-rtti", // Disables runtime type info (disabled because it may be incompatible with a UBSan feature)
 
         // Useful flags
