@@ -103,6 +103,6 @@
     },
     "C_Cpp.clang_format_fallbackStyle": "WebKit",
     "C_Cpp.clang_format_sortIncludes": false,
-    "C_Cpp.default.compilerPath": "/usr/bin/g++-12",
+    "C_Cpp.default.compilerPath": "/usr/bin/clang-20",
     "cmake.ignoreCMakeListsMissing": true,
 }

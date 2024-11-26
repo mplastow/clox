@@ -33,8 +33,9 @@ pub fn build(b: *std.Build) void {
     const exe_flags = [_][]const u8{
         // Standards and optimization flags
         "-std=c23", // C 23
+        "-g", // Include debug information in binary
         "-ggdb3", // Maximizes debug information
-        "-Og", // Optimization level: g = debug, s = size, 3 = maximum
+        "-Og", // Optimization level: Og = debug, Os = size, O3 = maximum
 
         // Warning flags
         "-Wall", // Reasonable default warnings
@@ -46,27 +47,31 @@ pub fn build(b: *std.Build) void {
         "-Wconversion", // Warns on implicit conversion that may result in data loss
         "-Wfloat-equal", // Warns when floating point types are compared for in/equality
         "-Wmismatched-tags", // Warns against previous declarations
+        "-Wnon-virtual-dtor", // == "-Weffc++": Warns when class has virtual functions but non-virtual destructor
         "-Wshadow-all", // Warns when a declaration shadows anything else
-        "-Wstrict-prototypes", // Warns on f() rather than f(void)
-        "-Wvla", // Warns when using variable-length arrays
+        "-Wstrict-prototypes", // Warns on f() rather than f(void) for C projects
+        "-Wthread-safety", // Warns on potential race conditions across threads
+        "-Wvla", // Warns when using C99 variable-length arrays
         "-Wsign-conversion", // Warns on sign conversion
+        "-Wunsafe-buffer-usage", // Warns when a buffer operation is done on a raw pointer
         "-Wunused", // Warns on unused variables, functions etc.
         "-Wunused-parameter", // Warns on unused parameters
         "-Wunused-template", // Warns on unused templates
-        "-Wnon-virtual-dtor", // = "-Weffc++", class has virtual functions but non-virtual destructor
 
         // Sanitizers / Hardeners
-        "-fsanitize=undefined", // UB Sanitizer
-        "-fsanitize-trap", // UB Sanitizer handles UB by trapping
-        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG", // libc++ hardening mode
+        "-fsanitize=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer
+        "-fsanitize-trap=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer handles UB by trapping
+        "-fno-omit-frame-pointer", // Must be set (along with -g) to get proper debug information in the binary
+        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG", // libc++ hardening mode. Change to _FAST/_EXTENSIVE for production builds
         "-ftrivial-auto-var-init=pattern", // Overwrites uninitialized memory with a pattern
+        // "-pedantic-errors", // Always turn pedantic warnings into errors, and reject all forbidden compiler extensions
 
         // Dialect flags
         "-fno-exceptions", // Disables exception handling
-        "-fno-rtti", // Disables runtime type info
+        // "-fno-rtti", // Disables runtime type info (disabled because it may be incompatible with a UBSan feature)
 
         // Useful flags
-        "-ftrapv", // Treat signed integer overflow as two’s complement (wraps around)
+        "-fwrapv", // Treat signed integer overflow as two’s complement (wraps around)
         "-fstrict-enums", // Enable optimizations based on the strict definition of an enum’s value range
         "-ftime-trace", // Outputs a Chrome Tracing .json object containing a compiler performance report
 
@@ -93,9 +98,10 @@ pub fn build(b: *std.Build) void {
     // Add include paths (one path per folder containing a #include)
     exe.addIncludePath(b.path("include/"));
 
-    // Link libraries and add .c and .cpp files with compiler flags
-    exe.linkLibC(); // when appropriate
+    // Link libraries
+    exe.linkLibC();
 
+    // Add .c files along with specified compiler flags
     exe.addCSourceFiles(.{
         .files = &exe_files,
         .flags = &exe_flags,
