@@ -27,7 +27,7 @@ void initVM(void);
 void freeVM(void);
 // Interprets the bytecode instructions inside the Lox virtual machine
 //  90% of the BM runtime is spent inside this function, via the call to run()
-InterpretResult interpret(Chunk* chunk);
+InterpretResult interpret(const char* source);
 // Push a Value onto the instruction stack
 void push(Value value);
 // Pop the last value on the instruction stack

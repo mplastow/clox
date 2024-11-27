@@ -14,7 +14,7 @@ pub fn build(b: *std.Build) void {
     // Build executable
     //
     const exe = b.addExecutable(.{
-        .name = "prog",
+        .name = "clox",
         .target = target,
         .optimize = optimize,
     });
@@ -24,8 +24,10 @@ pub fn build(b: *std.Build) void {
     const exe_files = [_][]const u8{
         "src/main.c",
         "src/chunk.c",
-        "src/memory.c",
+        "src/compiler.c",
         "src/debug.c",
+        "src/memory.c",
+        "src/scanner.c",
         "src/value.c",
         "src/vm.c",
     };

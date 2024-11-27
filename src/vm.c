@@ -1,6 +1,7 @@
 // clox - vm.c
 
 #include "common.h"
+#include "compiler.h"
 #include "debug.h"
 #include "vm.h"
 
@@ -106,13 +107,8 @@ static InterpretResult run(void)
 #undef BINARY_OP
 }
 
-InterpretResult interpret(Chunk* chunk)
+InterpretResult interpret(const char* source)
 {
-    // Store the chunk being executed in the VM
-    vm.chunk = chunk;
-    // Set the instruction pointer to the first byte of code in the chunk
-    vm.ip = vm.chunk->code;
-
-    // Call a helper function to run the bytecode instructions and return result
-    return run();
+    compile(source);
+    return INTERPRET_OK;
 }
