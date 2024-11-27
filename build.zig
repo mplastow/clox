@@ -35,7 +35,7 @@ pub fn build(b: *std.Build) void {
         "-std=c23", // C23
         "-g", // Include debug information in binary
         "-ggdb3", // Maximizes debug information
-        "-Og", // Optimization level: Og = debug, Os = size, O3 = maximum
+        "-O0", // Optimization level: O0 = none, Og = debug, Os = min. size, O3 = max. optimization
 
         // Warning flags
         "-Wall", // Reasonable default warnings
@@ -59,21 +59,20 @@ pub fn build(b: *std.Build) void {
         "-Wunused-template", // Warns on unused templates
 
         // Sanitizers / Hardeners
-        "-fsanitize=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer
-        "-fsanitize-trap=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer handles UB by trapping
+        // "-fsanitize=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer
+        // "-fsanitize-trap=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer handles UB by trapping
         "-fno-omit-frame-pointer", // Must be set (along with -g) to get proper debug information in the binary
-        "-D_LIBCPP_HARDENING_MODE=_LIBCPP_HARDENING_MODE_DEBUG", // libc++ hardening mode. Change to _FAST/_EXTENSIVE for production builds
-        "-ftrivial-auto-var-init=pattern", // Overwrites uninitialized memory with a pattern
+        // "-ftrivial-auto-var-init=pattern", // Overwrites uninitialized memory with a pattern
         // "-pedantic-errors", // Always turn pedantic warnings into errors, and reject all forbidden compiler extensions
 
         // Dialect flags
-        // "-fno-exceptions", // Disables exception handling
+        "-fno-exceptions", // Disables exception handling
         // "-fno-rtti", // Disables runtime type info (disabled because it may be incompatible with a UBSan feature)
 
         // Useful flags
-        "-fwrapv", // Treat signed integer overflow as two’s complement (wraps around)
-        "-fstrict-enums", // Enable optimizations based on the strict definition of an enum’s value range
-        "-ftime-trace", // Outputs a Chrome Tracing .json object containing a compiler performance report
+        // "-fwrapv", // Treat signed integer overflow as two’s complement (wraps around)
+        // "-fstrict-enums", // Enable optimizations based on the strict definition of an enum’s value range
+        // "-ftime-trace", // Outputs a Chrome Tracing .json object containing a compiler performance report
 
         // // Flags to DISABLE warnings -- for use with -Werror
         // "-Wno-cast-qual", // Disables warning when a pointer is cast so as to remove a type qualifier

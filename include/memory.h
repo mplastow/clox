@@ -17,7 +17,7 @@
 
 // Frees all memory associated with an array
 #define FREE_ARRAY(type, ptr, old_count) \
-    reallocate(ptr, (sizeof(type) * old_count), 0)
+    reallocate(ptr, sizeof(type) * (old_count), 0)
 
 // Allocates and reallocates blocks of memory, controlled by inputs.
 //  `reallocate()` is used for all dynamic memory management in clox.

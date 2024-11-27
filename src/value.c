@@ -7,15 +7,15 @@
 
 void initValueArray(ValueArray* array)
 {
+    array->values = NULL;
     array->capacity = 0;
     array->count = 0;
-    array->values = NULL;
 }
 
 void writeValueArray(ValueArray* array, Value value)
 {
     // Grow the current array if it does not have capacity for the new byte
-    if (array->capacity < array->count + 1) {
+    if (array->capacity < (array->count + 1)) {
         int old_capacity = array->capacity;
         array->capacity = GROW_CAPACITY(old_capacity);
         array->values = GROW_ARRAY(Value, array->values, old_capacity, array->capacity);

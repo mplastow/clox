@@ -99,7 +99,8 @@
         "value.h": "c",
         "common.h": "c",
         "vm.h": "c",
-        "stddef.h": "c"
+        "stddef.h": "c",
+        "stdio.h": "c"
     },
     "C_Cpp.clang_format_fallbackStyle": "WebKit",
     "C_Cpp.clang_format_sortIncludes": false,
