@@ -63,7 +63,8 @@ pub fn build(b: *std.Build) void {
         // Sanitizers / Hardeners
         "-fsanitize=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer
         "-fsanitize-trap=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer handles UB by trapping
-        "-fno-omit-frame-pointer", // Must be set (along with -g) to get proper debug information in the binary
+        "-fno-omit-frame-pointer", // Allows fast stack unwinding. Must be set (along with -g) to get proper debug information in the binary
+        "-fno-common", // Allows ASan to instrument global variables in C
         "-ftrivial-auto-var-init=pattern", // Overwrites uninitialized memory with a pattern
         // "-pedantic-errors", // Always turn pedantic warnings into errors, and reject all forbidden compiler extensions
 
