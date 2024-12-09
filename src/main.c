@@ -35,7 +35,7 @@ static char* readFile(const char* path)
     // Get a handle to the file
     FILE* file = fopen(path, "rb");
     if (file == NULL) {
-        fprintf(stderr, "Could not open file\"%d\".\n", path);
+        fprintf(stderr, "Could not open file\"%s\".\n", path);
         exit(74);
     }
 
