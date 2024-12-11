@@ -13,6 +13,7 @@ typedef struct {
     uint8_t* ip;
     Value stack[STACK_MAX]; // array of Values, length STACK_MAX, uninitialized by default
     Value* stack_top; // Points to item after last item in stack
+    Obj* objects;
 } VM;
 
 typedef enum {
@@ -20,6 +21,8 @@ typedef enum {
     INTERPRET_COMPILE_ERROR,
     INTERPRET_RUNTIME_ERROR,
 } InterpretResult;
+
+extern VM vm;
 
 // Initializes the Lox virtual machine
 void initVM(void);

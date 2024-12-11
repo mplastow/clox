@@ -4,6 +4,11 @@
 #define CLOX_MEMORY_H
 
 #include "common.h"
+#include "object.h"
+
+#define ALLOCATE(type, count) (type*)reallocate(NULL, 0, sizeof(type) * (count))
+
+#define FREE(type, pointer) reallocate(pointer, sizeof(type), 0)
 
 // Calculates a new capacity based on a given current capacity
 //  Growth factor is 2
@@ -34,5 +39,6 @@
 //
 //  Note(matt): `void*` indicates a type-erased pointer below and should be avoided
 void* reallocate(void* ptr, size_t old_size, size_t new_size);
+void freeObjects();
 
 #endif // CLOX_MEMORY_H

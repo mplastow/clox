@@ -239,6 +239,7 @@ static Token string()
         if (peek() == '\n') {
             scanner.line++;
         }
+        advance();
     }
 
     if (isAtEnd()) {
