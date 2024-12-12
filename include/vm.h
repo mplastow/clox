@@ -14,6 +14,7 @@ typedef struct {
     uint8_t* ip;
     Value stack[STACK_MAX]; // array of Values, length STACK_MAX, uninitialized by default
     Value* stack_top; // Points to item after last item in stack
+    Table globals;
     Table strings;
     Obj* objects;
 } VM;
