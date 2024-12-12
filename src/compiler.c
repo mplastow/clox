@@ -1,6 +1,7 @@
 // clox - compiler.c
 
 #include "compiler.h"
+
 #include "common.h"
 #include "scanner.h"
 

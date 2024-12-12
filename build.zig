@@ -29,6 +29,7 @@ pub fn build(b: *std.Build) void {
         "src/memory.c",
         "src/object.c",
         "src/scanner.c",
+        "src/table.c",
         "src/value.c",
         "src/vm.c",
     };
@@ -38,7 +39,7 @@ pub fn build(b: *std.Build) void {
         "-std=c23", // C23
         "-g", // Include debug information in binary
         "-ggdb3", // Maximizes debug information
-        "-Og", // Optimization level: O0 = none, Og = debug, Os = min. size, O3 = max. optimization
+        "-O0", // Optimization level: O0 = none, Og = debug, Os = min. size, O3 = max. optimization
 
         // Warning flags
         "-Wall", // Reasonable default warnings
@@ -62,8 +63,8 @@ pub fn build(b: *std.Build) void {
         "-Wunused-template", // Warns on unused templates
 
         // Sanitizers / Hardeners
-        "-fsanitize=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer
-        "-fsanitize-trap=undefined,bounds,implicit-conversion,nullability,unsigned-integer-overflow", // UB Sanitizer handles UB by trapping
+        "-fsanitize=undefined,bounds,implicit-conversion,nullability", // UB Sanitizer
+        "-fsanitize-trap=undefined,bounds,implicit-conversion,nullability", // UB Sanitizer handles UB by trapping
         "-fno-omit-frame-pointer", // Allows fast stack unwinding. Must be set (along with -g) to get proper debug information in the binary
         "-fno-common", // Allows ASan to instrument global variables in C
         "-ftrivial-auto-var-init=pattern", // Overwrites uninitialized memory with a pattern

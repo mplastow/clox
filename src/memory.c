@@ -1,6 +1,7 @@
 // clox - memory.c
 
 #include "memory.h"
+
 #include "vm.h"
 
 #include <stdlib.h>

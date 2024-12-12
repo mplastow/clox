@@ -101,7 +101,8 @@
         "vm.h": "c",
         "stddef.h": "c",
         "stdio.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "compiler.h": "c"
     },
     "C_Cpp.clang_format_fallbackStyle": "WebKit",
     "C_Cpp.clang_format_sortIncludes": false,
