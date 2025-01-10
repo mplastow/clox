@@ -65,6 +65,13 @@ void initVM(void)
 {
     resetStack();
     vm.objects = NULL;
+    vm.bytes_allocated = 0;
+    vm.next_gc = 1024 * 1024;
+
+    vm.gray_count = 0;
+    vm.gray_capacity = 0;
+    vm.gray_stack = NULL;
+
     initTable(&vm.globals);
     initTable(&vm.strings);
 
@@ -192,6 +199,8 @@ static void concatenate()
     chars[length = '\0'];
 
     ObjString* result = takeString(chars, length);
+    pop();
+    pop();
     push(OBJ_VAL(result));
 }
 

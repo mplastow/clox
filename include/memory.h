@@ -39,6 +39,9 @@
 //
 //  Note(matt): `void*` indicates a type-erased pointer below and should be avoided
 void* reallocate(void* ptr, size_t old_size, size_t new_size);
+void markObject(Obj* object);
+void markValue(Value value);
+void collectGarbage();
 void freeObjects();
 
 #endif // CLOX_MEMORY_H

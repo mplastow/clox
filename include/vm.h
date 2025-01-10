@@ -24,9 +24,15 @@ typedef struct {
     Value stack[STACK_MAX]; // array of Values, length STACK_MAX, uninitialized by default
     Value* stack_top; // Points to item after last item in stack
     Table globals;
-    ObjUpvalue* open_upvalues;
     Table strings;
+    ObjUpvalue* open_upvalues;
+
+    size_t bytes_allocated;
+    size_t next_gc;
     Obj* objects;
+    int gray_count;
+    int gray_capacity;
+    Obj** gray_stack;
 } VM;
 
 typedef enum {
