@@ -26,6 +26,7 @@ static void resetStack(void)
     // Note(matt): relies on stack[] decaying to a pointer
     vm.stack_top = vm.stack;
     vm.frame_count = 0;
+    vm.open_upvalues = NULL;
 }
 
 static void runtimeError(const char* format, ...)
@@ -139,6 +140,41 @@ static bool callValue(Value callee, int arg_count)
     return 0;
 }
 
+static ObjUpvalue* captureUpvalue(Value* local)
+{
+    ObjUpvalue* prev_upvalue = NULL;
+    ObjUpvalue* upvalue = vm.open_upvalues;
+    while (upvalue != NULL && upvalue->location > local) {
+        prev_upvalue = upvalue;
+        upvalue = upvalue->next;
+    }
+
+    if (upvalue != NULL && upvalue->location == local) {
+        return upvalue;
+    }
+
+    ObjUpvalue* created_upvalue = newUpvalue(local);
+    created_upvalue->next = upvalue;
+
+    if (prev_upvalue == NULL) {
+        vm.open_upvalues = created_upvalue;
+    } else {
+        prev_upvalue->next = created_upvalue;
+    }
+
+    return created_upvalue;
+}
+
+static void closeUpvalues(Value* last)
+{
+    while (vm.open_upvalues != NULL && vm.open_upvalues->location >= last) {
+        ObjUpvalue* upvalue = vm.open_upvalues;
+        upvalue->closed = *upvalue->location;
+        upvalue->location = &upvalue->closed;
+        vm.open_upvalues = upvalue->next;
+    }
+}
+
 static bool isFalsey(Value value)
 {
     return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
@@ -248,6 +284,14 @@ static InterpretResult run(void)
                 return INTERPRET_RUNTIME_ERROR;
             }
         } break;
+        case OP_GET_UPVALUE: {
+            uint8_t slot = READ_BYTE();
+            push(*frame->closure->upvalues[slot]->location);
+        } break;
+        case OP_SET_UPVALUE: {
+            uint8_t slot = READ_BYTE();
+            *frame->closure->upvalues[slot]->location = peek(0);
+        } break;
         case OP_EQUAL: {
             Value b = pop();
             Value a = pop();
@@ -320,9 +364,23 @@ static InterpretResult run(void)
             ObjFunction* function = AS_FUNCTION(READ_CONSTANT());
             ObjClosure* closure = newClosure(function);
             push(OBJ_VAL(closure));
+            for (int i = 0; i < closure->upvalue_count; i++) {
+                uint8_t is_local = READ_BYTE();
+                uint8_t index = READ_BYTE();
+                if (is_local) {
+                    closure->upvalues[i] = captureUpvalue(frame->slots + index);
+                } else {
+                    closure->upvalues[i] = frame->closure->upvalues[index];
+                }
+            }
+        } break;
+        case OP_CLOSE_UPVALUE: {
+            closeUpvalues(vm.stack_top - 1);
+            pop();
         } break;
         case OP_RETURN: {
             Value result = pop();
+            closeUpvalues(frame->slots);
             vm.frame_count--;
             if (vm.frame_count == 0) {
                 pop();

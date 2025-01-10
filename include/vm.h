@@ -24,6 +24,7 @@ typedef struct {
     Value stack[STACK_MAX]; // array of Values, length STACK_MAX, uninitialized by default
     Value* stack_top; // Points to item after last item in stack
     Table globals;
+    ObjUpvalue* open_upvalues;
     Table strings;
     Obj* objects;
 } VM;
