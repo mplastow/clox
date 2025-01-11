@@ -997,10 +997,11 @@ static void synchronize()
         case TOKEN_RETURN:
             return;
 
-        default:; // Do nothing
+        default:; // Do nothing.
         }
+
+        advance();
     }
-    advance();
 }
 
 static void declaration()
