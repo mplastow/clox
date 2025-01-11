@@ -25,6 +25,7 @@ typedef struct {
     Value* stack_top; // Points to item after last item in stack
     Table globals;
     Table strings;
+    ObjString* init_string;
     ObjUpvalue* open_upvalues;
 
     size_t bytes_allocated;

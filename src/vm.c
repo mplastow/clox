@@ -75,6 +75,9 @@ void initVM(void)
     initTable(&vm.globals);
     initTable(&vm.strings);
 
+    vm.init_string = NULL;
+    vm.init_string = copyString("init", 4);
+
     defineNative("clock", clockNative);
 }
 
@@ -82,6 +85,7 @@ void freeVM(void)
 {
     freeTable(&vm.globals);
     freeTable(&vm.strings);
+    vm.init_string = NULL;
     freeObjects();
 }
 
@@ -129,9 +133,22 @@ static bool callValue(Value callee, int arg_count)
 {
     if (IS_OBJ(callee)) {
         switch (OBJ_TYPE(callee)) {
+        case OBJ_BOUND_METHOD: {
+            ObjBoundMethod* bound = AS_BOUND_METHOD(callee);
+            vm.stack_top[-arg_count - 1] = bound->receiver;
+            return call(bound->method, arg_count);
+        }
         case OBJ_CLASS: {
             ObjClass* klass = AS_CLASS(callee);
             vm.stack_top[-arg_count - 1] = OBJ_VAL(newInstance(klass));
+            Value initializer;
+            if (tableGet(&klass->methods, vm.init_string, &initializer)) {
+                return call(AS_CLOSURE(initializer), arg_count);
+            } else if (arg_count != 0) {
+                runtimeError("Expected 0 arguments but got %d.",
+                    arg_count);
+                return 0;
+            }
             return 1;
         }
         case OBJ_CLOSURE: {
@@ -150,6 +167,50 @@ static bool callValue(Value callee, int arg_count)
     }
     runtimeError("Can only call functions and classes.");
     return 0;
+}
+
+static bool invokeFromClass(ObjClass* klass, ObjString* name, int arg_count)
+{
+    Value method;
+    if (!tableGet(&klass->methods, name, &method)) {
+        runtimeError("Undefined property '%s'.", name->chars);
+        return 0;
+    }
+    return call(AS_CLOSURE(method), arg_count);
+}
+
+static bool invoke(ObjString* name, int arg_count)
+{
+    Value receiver = peek(arg_count);
+
+    if (!IS_INSTANCE(receiver)) {
+        runtimeError("Only instances have methods.");
+        return 0;
+    }
+
+    ObjInstance* instance = AS_INSTANCE(receiver);
+
+    Value value;
+    if (tableGet(&instance->fields, name, &value)) {
+        vm.stack_top[-arg_count - 1] = value;
+        return callValue(value, arg_count);
+    }
+
+    return invokeFromClass(instance->klass, name, arg_count);
+}
+
+static bool bindMethod(ObjClass* klass, ObjString* name)
+{
+    Value method;
+    if (!tableGet(&klass->methods, name, &method)) {
+        runtimeError("Undefined property '%s'.", name->chars);
+        return 0;
+    }
+
+    ObjBoundMethod* bound = newBoundMethod(peek(0), AS_CLOSURE(method));
+    pop();
+    push(OBJ_VAL(bound));
+    return 1;
 }
 
 static ObjUpvalue* captureUpvalue(Value* local)
@@ -185,6 +246,14 @@ static void closeUpvalues(Value* last)
         upvalue->location = &upvalue->closed;
         vm.open_upvalues = upvalue->next;
     }
+}
+
+static void defineMethod(ObjString* name)
+{
+    Value method = peek(0);
+    ObjClass* klass = AS_CLASS(peek(1));
+    tableSet(&klass->methods, name, method);
+    pop();
 }
 
 static bool isFalsey(Value value)
@@ -321,9 +390,10 @@ static InterpretResult run(void)
                 break;
             }
 
-            runtimeError("Undefined property '%s'.", name->chars);
-            return INTERPRET_RUNTIME_ERROR;
-        }
+            if (!bindMethod(instance->klass, name)) {
+                return INTERPRET_RUNTIME_ERROR;
+            }
+        } break;
         case OP_SET_PROPERTY: {
             if (!IS_INSTANCE(peek(1))) {
                 runtimeError("Only instances have fields.");
@@ -403,6 +473,14 @@ static InterpretResult run(void)
             }
             frame = &vm.frames[vm.frame_count - 1];
         } break;
+        case OP_INVOKE: {
+            ObjString* method = READ_STRING();
+            int arg_count = READ_BYTE();
+            if (!invoke(method, arg_count)) {
+                return INTERPRET_RUNTIME_ERROR;
+            }
+            frame = &vm.frames[vm.frame_count - 1];
+        } break;
         case OP_CLOSURE: {
             ObjFunction* function = AS_FUNCTION(READ_CONSTANT());
             ObjClosure* closure = newClosure(function);
@@ -437,6 +515,9 @@ static InterpretResult run(void)
         } break;
         case OP_CLASS: {
             push(OBJ_VAL(newClass(READ_STRING())));
+        } break;
+        case OP_METHOD: {
+            defineMethod(READ_STRING());
         } break;
         }
     }
