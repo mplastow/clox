@@ -817,14 +817,14 @@ static void classDeclaration()
             error("A class can't inherit from itself.");
         }
 
+        beginScope();
+        addLocal(syntheticToken("super"));
+        defineVariable(0);
+
         namedVariable(class_name, 0);
         emitByte(OP_INHERIT);
         class_compiler.has_superclass = 1;
     }
-
-    beginScope();
-    addLocal(syntheticToken("super"));
-    defineVariable(0);
 
     namedVariable(class_name, 0);
     consume(TOKEN_LEFT_BRACE, "Expect '{' before class body.");
