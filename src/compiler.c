@@ -791,6 +791,8 @@ static void method()
         type = TYPE_INITIALIZER;
     }
 
+    function(type);
+
     emitBytes(OP_METHOD, constant);
 }
 
