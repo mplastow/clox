@@ -64,7 +64,8 @@ int disassembleInstruction(Chunk* chunk, int offset)
 {
     // Print offset into chunk as a signpost
     printf("%04d ", offset);
-    if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]) {
+    if (offset > 0
+        && chunk->lines[offset] == chunk->lines[offset - 1]) {
         printf("   | ");
     } else {
         printf("%4d ", chunk->lines[offset]);
@@ -72,7 +73,6 @@ int disassembleInstruction(Chunk* chunk, int offset)
 
     // Read a single-byte opcode from the bytecode stream
     uint8_t instruction = chunk->code[offset];
-
     // Display the opcode using a utility function
     switch (instruction) {
     case OP_CONSTANT:

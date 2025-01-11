@@ -588,8 +588,8 @@ static void namedVariable(Token name, bool can_assign)
         set_op = OP_SET_UPVALUE;
     } else {
         arg = identifierConstant(&name);
-        get_op = OP_GET_LOCAL;
-        set_op = OP_SET_LOCAL;
+        get_op = OP_GET_GLOBAL;
+        set_op = OP_SET_GLOBAL;
     }
 
     if (can_assign && match(TOKEN_EQUAL)) {
