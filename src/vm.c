@@ -263,14 +263,14 @@ static bool isFalsey(Value value)
 
 static void concatenate()
 {
-    ObjString* b = AS_STRING(pop());
-    ObjString* a = AS_STRING(pop());
+    ObjString* b = AS_STRING(peek(0));
+    ObjString* a = AS_STRING(peek(1));
 
     int length = a->length + b->length;
     char* chars = ALLOCATE(char, length + 1);
     memcpy(chars, a->chars, a->length);
     memcpy(chars + a->length, b->chars, b->length);
-    chars[length = '\0'];
+    chars[length] = '\0';
 
     ObjString* result = takeString(chars, length);
     pop();
@@ -399,6 +399,7 @@ static InterpretResult run(void)
                 runtimeError("Only instances have fields.");
                 return INTERPRET_RUNTIME_ERROR;
             }
+
             ObjInstance* instance = AS_INSTANCE(peek(1));
             tableSet(&instance->fields, READ_STRING(), peek(0));
             Value value = pop();
