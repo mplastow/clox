@@ -202,6 +202,7 @@ static void emitReturn()
     } else {
         emitByte(OP_NIL);
     }
+
     emitByte(OP_RETURN);
 }
 
@@ -459,6 +460,8 @@ static void and_(bool can_assign)
 
     emitByte(OP_POP);
     parsePrecedence(PREC_AND);
+
+    patchJump(end_jump);
 }
 
 // Parse binary operators
@@ -670,7 +673,7 @@ static void unary(bool can_assign)
 ParseRule rules[] = {
     [TOKEN_LEFT_PAREN] = { grouping, call, PREC_CALL },
     [TOKEN_RIGHT_PAREN] = { NULL, NULL, PREC_NONE },
-    [TOKEN_LEFT_BRACE] = { NULL, NULL, PREC_NONE },
+    [TOKEN_LEFT_BRACE] = { NULL, NULL, PREC_NONE }, // [big]
     [TOKEN_RIGHT_BRACE] = { NULL, NULL, PREC_NONE },
     [TOKEN_COMMA] = { NULL, NULL, PREC_NONE },
     [TOKEN_DOT] = { NULL, dot, PREC_CALL },
@@ -733,6 +736,12 @@ static void parsePrecedence(Precedence precedence)
     if (can_assign && match(TOKEN_EQUAL)) {
         error("Invalid assignment target.");
     }
+}
+
+//
+static ParseRule* getRule(TokenType type)
+{
+    return &rules[type];
 }
 
 // Recursively called to compile an operand
@@ -1044,12 +1053,6 @@ static void statement()
     } else {
         expressionStatement();
     }
-}
-
-//
-static ParseRule* getRule(TokenType type)
-{
-    return &rules[type];
 }
 
 // Compiles Lox tokens to VM bytecode

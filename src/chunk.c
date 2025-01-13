@@ -16,6 +16,13 @@ void initChunk(Chunk* chunk)
     initValueArray(&chunk->constants); // Note(matt): Reference operator & is a bad idea
 }
 
+void freeChunk(Chunk* chunk)
+{
+    FREE_ARRAY(uint8_t, chunk->code, chunk->capacity);
+    FREE_ARRAY(int, chunk->lines, chunk->capacity);
+    initChunk(chunk);
+}
+
 void writeChunk(Chunk* chunk, uint8_t byte, int line)
 {
     // Grow the current array if it does not have capacity for the new byte
@@ -39,11 +46,4 @@ int addConstant(Chunk* chunk, Value value)
     writeValueArray(&chunk->constants, value);
     pop();
     return chunk->constants.count - 1;
-}
-
-void freeChunk(Chunk* chunk)
-{
-    FREE_ARRAY(uint8_t, chunk->code, chunk->capacity);
-    FREE_ARRAY(int, chunk->lines, chunk->capacity);
-    initChunk(chunk);
 }

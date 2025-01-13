@@ -16,13 +16,13 @@
     ((capacity) < 8 ? 8 : (capacity) * 2)
 
 // Grows an array to a specified size by calling `reallocate()`
-#define GROW_ARRAY(type, ptr, old_count, new_count)    \
-    (type*)reallocate(ptr, sizeof(type) * (old_count), \
+#define GROW_ARRAY(type, pointer, old_count, new_count)    \
+    (type*)reallocate(pointer, sizeof(type) * (old_count), \
         sizeof(type) * (new_count))
 
 // Frees all memory associated with an array
-#define FREE_ARRAY(type, ptr, old_count) \
-    reallocate(ptr, sizeof(type) * (old_count), 0)
+#define FREE_ARRAY(type, pointer, old_count) \
+    reallocate(pointer, sizeof(type) * (old_count), 0)
 
 // Allocates and reallocates blocks of memory, controlled by inputs.
 //  `reallocate()` is used for all dynamic memory management in clox.
@@ -38,7 +38,7 @@
 //  -------------------------------------------------------------
 //
 //  Note(matt): `void*` indicates a type-erased pointer below and should be avoided
-void* reallocate(void* ptr, size_t old_size, size_t new_size);
+void* reallocate(void* pointer, size_t old_size, size_t new_size);
 void markObject(Obj* object);
 void markValue(Value value);
 void collectGarbage();

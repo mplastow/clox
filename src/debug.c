@@ -8,8 +8,6 @@
 
 void disassembleChunk(Chunk* chunk, const char* name)
 {
-    printf("== %s ==\n", name);
-
     // Note(matt): the increment to the loop variable is _inside_ the function
     //  body and is hidden behind the function call!!
     for (int offset = 0; offset < chunk->count;) {
@@ -64,8 +62,7 @@ int disassembleInstruction(Chunk* chunk, int offset)
 {
     // Print offset into chunk as a signpost
     printf("%04d ", offset);
-    if (offset > 0
-        && chunk->lines[offset] == chunk->lines[offset - 1]) {
+    if (offset > 0 && chunk->lines[offset] == chunk->lines[offset - 1]) {
         printf("   | ");
     } else {
         printf("%4d ", chunk->lines[offset]);

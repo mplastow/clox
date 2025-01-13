@@ -123,10 +123,9 @@ static void skipWhitespace()
         // Match // for comments
         case '/':
             if (peekNext() == '/') {
-                // A comment goes until the end of the line
-                while (peek() != '\n' && !isAtEnd()) {
+                // A comment goes until the end of the line.
+                while (peek() != '\n' && !isAtEnd())
                     advance();
-                }
             } else {
                 return;
             }
@@ -263,7 +262,6 @@ Token scanToken()
     }
 
     char c = advance();
-
     if (isAlpha(c)) {
         return identifier();
     }
@@ -272,7 +270,6 @@ Token scanToken()
     }
 
     switch (c) {
-
     // Single-character tokens
     case '(':
         return makeToken(TOKEN_LEFT_PAREN);

@@ -14,7 +14,7 @@
 
 #define GC_HEAP_GROW_FACTOR 2
 
-void* reallocate(void* ptr, size_t old_size, size_t new_size)
+void* reallocate(void* pointer, size_t old_size, size_t new_size)
 {
     vm.bytes_allocated += new_size - old_size;
 
@@ -29,15 +29,12 @@ void* reallocate(void* ptr, size_t old_size, size_t new_size)
 
     // If new_size is not larger than old_size, return a null pointer
     if (new_size == 0) {
-        free(ptr);
-        return NULL;
-    } else if (new_size <= old_size) {
-        free(ptr);
+        free(pointer);
         return NULL;
     }
 
     // If new_size > 0, allocate some more memory
-    void* result = realloc(ptr, new_size);
+    void* result = realloc(pointer, new_size);
     // Handles allocation failure due to OOM
     if (result == NULL)
         exit(1);
