@@ -446,8 +446,10 @@ static uint8_t argumentList()
             expression();
             if (arg_count == 255) {
                 error("Can't have more than 255 arguments.");
+                arg_count = 0;
+            } else {
+                arg_count++;
             }
-            arg_count++;
         } while (match(TOKEN_COMMA));
     }
     consume(TOKEN_RIGHT_PAREN, "Expect ')' after arguments.");
